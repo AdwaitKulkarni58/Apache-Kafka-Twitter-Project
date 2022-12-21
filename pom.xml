@@ -8,11 +8,10 @@
 		<version>3.0.0</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.twitter.kafka</groupId>
-	<artifactId>adwaitkulkarni58.project</artifactId>
+	<groupId>com.adwaitkulkarni58</groupId>
+	<artifactId>twitter.kafka.project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>adwaitkulkarni58.project</name>
-	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

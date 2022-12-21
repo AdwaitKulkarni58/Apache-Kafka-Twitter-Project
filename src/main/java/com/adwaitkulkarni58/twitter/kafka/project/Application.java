@@ -1,4 +1,4 @@
-package com.twitter.kafka.adwaitkulkarni58.project;
+package com.adwaitkulkarni58.twitter.kafka.project;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
