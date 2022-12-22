@@ -3,7 +3,10 @@ package com.adwaitkulkarni58.twitter.kafka.project.kafka.producer;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,17 +26,36 @@ import com.twitter.hbc.httpclient.auth.OAuth1;
 @Configuration
 public class TwitterProducer {
 
+	Logger logger = LoggerFactory.getLogger(getClass());
+
 	@Autowired
 	private TwitterConfig twitterConfig;
 
 	// run the producer
 	public void run() {
 		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000);
+
+		// create twitter client
 		Client client = createTwitterClient(msgQueue);
+
+		// make connection to client
 		client.connect();
+
+		// loop for sending tweets to kafka
+		while (!client.isDone()) {
+			String msg = null;
+			try {
+				msg = msgQueue.poll(5, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				client.stop();
+			}
+			if (msg != null) {
+				logger.info(msg);
+			}
+		}
 	}
 
-// create twitter client
 	@Bean
 	public Client createTwitterClient(BlockingQueue<String> msgQueue) {
 		String apiKey = twitterConfig.getTwitterApiKey();
