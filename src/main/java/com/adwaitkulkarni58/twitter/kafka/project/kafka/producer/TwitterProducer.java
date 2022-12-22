@@ -1,10 +1,14 @@
 package com.adwaitkulkarni58.twitter.kafka.project.kafka.producer;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +48,7 @@ public class TwitterProducer {
 		client.connect();
 
 		// create a producer
+		KafkaProducer<String, String> producer = createProducer();
 
 		// loop for sending tweets to kafka
 		while (!client.isDone()) {
@@ -80,6 +85,19 @@ public class TwitterProducer {
 				.processor(new StringDelimitedProcessor(msgQueue));
 		Client hosebirdClient = builder.build();
 		return hosebirdClient;
+	}
+
+	public KafkaProducer<String, String> createProducer() {
+
+		// set producer properties
+		Properties properties = new Properties();
+
+		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
+		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+
+		return null;
+
 	}
 
 }
