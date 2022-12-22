@@ -48,7 +48,7 @@ public class TwitterProducer {
 		client.connect();
 
 		// create a producer
-		KafkaProducer<String, String> producer = createProducer();
+		KafkaProducer<String, String> kafkaProducer = createProducer();
 
 		// loop for sending tweets to kafka
 		while (!client.isDone()) {
@@ -96,8 +96,8 @@ public class TwitterProducer {
 		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
-		return null;
-
+		KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
+		return kafkaProducer;
 	}
 
 }
