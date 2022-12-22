@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.adwaitkulkarni58.twitter.config.TwitterConfig;
 import com.google.common.collect.Lists;
 import com.twitter.hbc.core.Constants;
 import com.twitter.hbc.core.Hosts;
@@ -12,12 +17,11 @@ import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 
+@Configuration
 public class TwitterProducer {
 
-	// constructor
-	public TwitterProducer() {
-
-	}
+	@Autowired
+	private TwitterConfig twitterConfig;
 
 	// run the producer
 	public void run() {
@@ -25,7 +29,13 @@ public class TwitterProducer {
 	}
 
 	// create twitter client
+	@Bean
 	public void createTwitterClient() {
+		String apiKey = twitterConfig.getTwitterApiKey();
+		String apiKeySecret = twitterConfig.getTwitterApiKeySecret();
+		String accessToken = twitterConfig.getTwitterAccessToken();
+		String accessTokenSecret = twitterConfig.getTwitterAccessTokenSecret();
+
 		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(100000);
 
 		/**
@@ -39,7 +49,7 @@ public class TwitterProducer {
 		hosebirdEndpoint.trackTerms(terms);
 
 		// These secrets should be read from a config file
-		Authentication hosebirdAuth = new OAuth1("consumerKey", "consumerSecret", "token", "secret");
+		Authentication hosebirdAuth = new OAuth1(apiKey, apiKeySecret, accessToken, accessTokenSecret);
 	}
 
 }
