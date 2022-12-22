@@ -74,6 +74,7 @@ public class TwitterProducer {
 		}
 	}
 
+	// create a twitter client for the producer to receive messages from
 	@Bean
 	public Client createTwitterClient(BlockingQueue<String> msgQueue) {
 		String apiKey = twitterConfig.getTwitterApiKey();
@@ -95,6 +96,7 @@ public class TwitterProducer {
 		return hosebirdClient;
 	}
 
+	// create a new kafka producer
 	public KafkaProducer<String, String> createProducer() {
 
 		// set producer properties
@@ -104,6 +106,7 @@ public class TwitterProducer {
 		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
+		// create the producer
 		KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
 		return kafkaProducer;
 	}
