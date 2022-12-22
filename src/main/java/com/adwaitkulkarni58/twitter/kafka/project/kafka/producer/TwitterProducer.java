@@ -28,23 +28,19 @@ public class TwitterProducer {
 
 	// run the producer
 	public void run() {
-		hosebirdClient.connect();
+		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000);
+		Client client = createTwitterClient(msgQueue);
+		client.connect();
 	}
 
-	// create twitter client
+// create twitter client
 	@Bean
-	public Client createTwitterClient() {
+	public Client createTwitterClient(BlockingQueue<String> msgQueue) {
 		String apiKey = twitterConfig.getTwitterApiKey();
 		String apiKeySecret = twitterConfig.getTwitterApiKeySecret();
 		String accessToken = twitterConfig.getTwitterAccessToken();
 		String accessTokenSecret = twitterConfig.getTwitterAccessTokenSecret();
 
-		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(100000);
-
-		/**
-		 * Declare the host you want to connect to, the end point, and authentication
-		 * (basic auth or oauth)
-		 */
 		Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
 		StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
 		List<String> terms = Lists.newArrayList("kafka");
@@ -52,8 +48,8 @@ public class TwitterProducer {
 
 		Authentication hosebirdAuth = new OAuth1(apiKey, apiKeySecret, accessToken, accessTokenSecret);
 
-		ClientBuilder builder = new ClientBuilder().name("Hosebird-Client-01") // optional: mainly for the logs
-				.hosts(hosebirdHosts).authentication(hosebirdAuth).endpoint(hosebirdEndpoint)
+		ClientBuilder builder = new ClientBuilder().name("Hosebird-Client-01").hosts(hosebirdHosts)
+				.authentication(hosebirdAuth).endpoint(hosebirdEndpoint)
 				.processor(new StringDelimitedProcessor(msgQueue));
 		Client hosebirdClient = builder.build();
 		return hosebirdClient;
