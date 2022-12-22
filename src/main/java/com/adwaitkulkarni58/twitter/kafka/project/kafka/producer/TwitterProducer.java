@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +42,14 @@ public class TwitterProducer {
 		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000);
 
 		// create twitter client
+		logger.info("Creating a new client");
 		Client client = createTwitterClient(msgQueue);
+		logger.info("***Client created successfully***");
 
 		// make connection to client
 		logger.info("Making connection to client");
 		client.connect();
+		logger.info("***Connection made***");
 
 		// create a producer
 		KafkaProducer<String, String> kafkaProducer = createProducer();
@@ -59,9 +63,13 @@ public class TwitterProducer {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				client.stop();
+				logger.info("Error occured");
 			}
 			if (msg != null) {
 				logger.info(msg);
+				logger.info("Sending new message");
+				kafkaProducer.send(new ProducerRecord<String, String>("tweets", null, msg));
+				logger.info("***Successfully saved message to Kafka topic***");
 			}
 		}
 	}
