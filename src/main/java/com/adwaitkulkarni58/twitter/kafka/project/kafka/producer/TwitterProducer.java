@@ -32,6 +32,7 @@ public class TwitterProducer {
 	private TwitterConfig twitterConfig;
 
 	// run the producer
+	@Bean
 	public void run() {
 		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000);
 
@@ -39,12 +40,16 @@ public class TwitterProducer {
 		Client client = createTwitterClient(msgQueue);
 
 		// make connection to client
+		logger.info("Making connection to client");
 		client.connect();
+
+		// create a producer
 
 		// loop for sending tweets to kafka
 		while (!client.isDone()) {
 			String msg = null;
 			try {
+				logger.info("Polling for tweets");
 				msg = msgQueue.poll(5, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -65,7 +70,7 @@ public class TwitterProducer {
 
 		Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
 		StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-		List<String> terms = Lists.newArrayList("kafka");
+		List<String> terms = Lists.newArrayList("Messi");
 		hosebirdEndpoint.trackTerms(terms);
 
 		Authentication hosebirdAuth = new OAuth1(apiKey, apiKeySecret, accessToken, accessTokenSecret);
