@@ -18,7 +18,7 @@ public class TwitterConsumer {
 
 	public void createConsumer() {
 		String BOOTSTRAP_SERVERS = "127.0.0.1:9092";
-		String topic = "tweets";
+		String topic = "tweets"; // topic name, change for different topics
 
 		// set properties
 		Properties properties = new Properties();

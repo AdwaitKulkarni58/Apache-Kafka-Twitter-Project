@@ -60,18 +60,19 @@ public class TwitterProducer {
 			try {
 				logger.info("Polling for tweets");
 				msg = msgQueue.poll(5, TimeUnit.SECONDS);
+				if (msg != null) {
+					logger.info(msg);
+					logger.info("Sending new message");
+					kafkaProducer.send(new ProducerRecord<String, String>("tweets", null, msg));
+					logger.info("***Successfully saved message to Kafka topic***");
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				client.stop();
 				logger.info("Error occured");
 			}
-			if (msg != null) {
-				logger.info(msg);
-				logger.info("Sending new message");
-				kafkaProducer.send(new ProducerRecord<String, String>("tweets", null, msg));
-				logger.info("***Successfully saved message to Kafka topic***");
-			}
 		}
+		client.stop();
 		kafkaProducer.flush();
 		kafkaProducer.close();
 	}
@@ -86,7 +87,7 @@ public class TwitterProducer {
 
 		Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
 		StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-		List<String> terms = Lists.newArrayList("Messi");
+		List<String> terms = Lists.newArrayList("Messi", "football", "world cup", "Argentina");
 		hosebirdEndpoint.trackTerms(terms);
 
 		Authentication hosebirdAuth = new OAuth1(apiKey, apiKeySecret, accessToken, accessTokenSecret);
@@ -101,10 +102,12 @@ public class TwitterProducer {
 	// create a new kafka producer
 	public KafkaProducer<String, String> createProducer() {
 
+		String BOOTSTRAP_SERVERS = "127.0.0.1:9092";
+
 		// set producer properties
 		Properties properties = new Properties();
 
-		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
+		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
 		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
