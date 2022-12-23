@@ -72,6 +72,8 @@ public class TwitterProducer {
 				logger.info("***Successfully saved message to Kafka topic***");
 			}
 		}
+		kafkaProducer.flush();
+		kafkaProducer.close();
 	}
 
 	// create a twitter client for the producer to receive messages from
