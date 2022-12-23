@@ -1,4 +1,4 @@
-package com.adwaitkulkarni58.twitter.kafka.project.kafka.producer;
+package com.adwaitkulkarni58.twitter.producer;
 
 import java.util.List;
 import java.util.Properties;
