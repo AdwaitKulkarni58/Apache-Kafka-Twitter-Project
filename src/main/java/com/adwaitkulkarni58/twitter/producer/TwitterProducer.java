@@ -57,6 +57,17 @@ public class TwitterProducer {
 		// create a producer
 		KafkaProducer<String, String> kafkaProducer = createProducer();
 
+		// shutting down the producer and stopping the application
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			logger.info("Stopping the application");
+			client.stop();
+			logger.info("Client stopped");
+			logger.info("Closing the producer");
+			kafkaProducer.flush();
+			kafkaProducer.close();
+			logger.info("Producer closed");
+		}));
+
 		// loop for sending tweets to kafka
 		while (!client.isDone()) {
 			String msg = null;
