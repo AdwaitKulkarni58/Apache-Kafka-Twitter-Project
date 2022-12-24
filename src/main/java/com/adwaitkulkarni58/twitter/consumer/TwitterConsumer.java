@@ -36,6 +36,7 @@ import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class TwitterConsumer {
@@ -103,7 +104,8 @@ public class TwitterConsumer {
 			logger.error(e.toString());
 		}
 
-		logger.info("Indexed with version " + response.version());
+		logger.info("Result of indexing " + response);
+		logger.info("Indexed with id " + response.id());
 	}
 
 	// create a consumer
