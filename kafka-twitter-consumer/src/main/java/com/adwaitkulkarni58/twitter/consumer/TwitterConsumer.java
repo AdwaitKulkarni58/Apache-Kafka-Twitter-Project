@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Properties;
 
 import org.apache.http.HttpHost;
@@ -35,7 +34,6 @@ import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
-import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class TwitterConsumer {
@@ -92,26 +90,25 @@ public class TwitterConsumer {
 				"{'@timestamp': '2022-04-08T13:55:32Z', 'level': 'warn', 'message': 'Some log message'}".replace('\'',
 						'"'));
 
-		IndexRequest<JsonData> request = IndexRequest.of(i -> i.index(index).withJson(input));
-
-		IndexResponse response = null;
-		try {
-			response = client.index(request);
-		} catch (ElasticsearchException e) {
-			logger.error(e.toString());
-		} catch (IOException e) {
-			logger.error(e.toString());
-		}
-
-		logger.info("Result of indexing " + response);
-		logger.info("Indexed with id " + response.id());
-
 		KafkaConsumer<String, String> consumer = createConsumer("tweets");
 
 		while (true) {
 			ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
 
 			for (ConsumerRecord<String, String> record : records) {
+				IndexRequest<JsonData> request = IndexRequest.of(i -> i.index(index).withJson(input));
+
+				IndexResponse response = null;
+				try {
+					response = client.index(request);
+				} catch (ElasticsearchException e) {
+					logger.error(e.toString());
+				} catch (IOException e) {
+					logger.error(e.toString());
+				}
+
+				logger.info("Result of indexing " + response);
+				logger.info("Indexed with id " + response.id());
 				logger.info("Key:" + record.key() + ", value:" + record.value());
 			}
 		}
