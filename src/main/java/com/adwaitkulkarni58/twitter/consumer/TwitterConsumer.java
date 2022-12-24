@@ -20,16 +20,27 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 
+import com.adwaitkulkarni58.twitter.config.ElasticSearchConfig;
+
+@Configuration
 public class TwitterConsumer {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
+	@Autowired
+	private ElasticSearchConfig elasticSearchConfig;
+
 	public RestClient createClient() {
 
+		String hostname = elasticSearchConfig.getHostname();
+		String username = elasticSearchConfig.getUsername();
+		String password = elasticSearchConfig.getPassword();
+
 		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-		credentialsProvider.setCredentials(AuthScope.ANY,
-				new UsernamePasswordCredentials("user", "test-user-password"));
+		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 
 		RestClientBuilder builder = RestClient.builder(new HttpHost(hostname, 443))
 				.setHttpClientConfigCallback(new HttpClientConfigCallback() {
