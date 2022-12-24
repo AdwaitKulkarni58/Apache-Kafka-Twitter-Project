@@ -1,5 +1,8 @@
 package com.adwaitkulkarni58.twitter.consumer;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
@@ -26,6 +29,10 @@ import org.springframework.context.annotation.Configuration;
 import com.adwaitkulkarni58.twitter.config.ElasticSearchConfig;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import co.elastic.clients.elasticsearch.core.IndexRequest;
+import co.elastic.clients.elasticsearch.core.IndexResponse;
+import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -68,11 +75,32 @@ public class TwitterConsumer {
 
 	}
 
-	public void runClient() {
+	// search for an actual index using elastic's documentation
+	public void searchForIndex() {
+		String index = "twitter";
 		ElasticsearchClient client = createClient();
 
+		Reader input = new StringReader(
+				"{'@timestamp': '2022-04-08T13:55:32Z', 'level': 'warn', 'message': 'Some log message'}".replace('\'',
+						'"'));
+
+		IndexRequest<JsonData> request = IndexRequest.of(i -> i.index(index).withJson(input));
+
+		IndexResponse response = null;
+		try {
+			response = client.index(request);
+		} catch (ElasticsearchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		logger.info("Indexed with version " + response.version());
 	}
 
+	// create a consumer
 	public void createConsumer() {
 		String BOOTSTRAP_SERVERS = "127.0.0.1:9092";
 		String topic = "tweets"; // topic name, change for different topics
