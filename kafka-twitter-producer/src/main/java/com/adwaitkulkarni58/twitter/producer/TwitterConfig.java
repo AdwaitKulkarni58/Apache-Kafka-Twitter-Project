@@ -1,4 +1,4 @@
-package com.adwaitkulkarni58.twitter.config;
+package com.adwaitkulkarni58.twitter.producer;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

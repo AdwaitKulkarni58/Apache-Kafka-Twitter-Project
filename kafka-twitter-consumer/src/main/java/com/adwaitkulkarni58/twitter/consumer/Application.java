@@ -1,4 +1,4 @@
-package com.adwaitkulkarni58.twitter;
+package com.adwaitkulkarni58.twitter.consumer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

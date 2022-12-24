@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
-import com.adwaitkulkarni58.twitter.config.ElasticSearchConfig;
-
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
@@ -57,7 +55,7 @@ public class TwitterConsumer {
 		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 		logger.info("Credentials set successfully");
 
-		RestClientBuilder builder = RestClient.builder(new HttpHost(hostname, 443))
+		RestClientBuilder builder = RestClient.builder(new HttpHost(hostname, 9200))
 				.setHttpClientConfigCallback(new HttpClientConfigCallback() {
 					@Override
 					public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
@@ -85,6 +83,7 @@ public class TwitterConsumer {
 	}
 
 	// search for an actual index using elastic's documentation
+	@PostConstruct
 	public void searchForIndex() {
 		String index = "twitter";
 		ElasticsearchClient client = createClient();
