@@ -6,9 +6,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,16 +63,25 @@ public class TwitterProducer {
 			try {
 				logger.info("Polling for tweets");
 				msg = msgQueue.poll(5, TimeUnit.SECONDS);
-				if (msg != null) {
-					logger.info(msg);
-					logger.info("Sending new message");
-					kafkaProducer.send(new ProducerRecord<String, String>("tweets", null, msg));
-					logger.info("***Successfully saved message to Kafka topic***");
-				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				client.stop();
 				logger.info("Error occured");
+			}
+			if (msg != null) {
+				logger.info(msg);
+				logger.info("Sending new message");
+				kafkaProducer.send(new ProducerRecord<String, String>("tweets", null, msg), new Callback() {
+
+					@Override
+					public void onCompletion(RecordMetadata metadata, Exception exception) {
+						// TODO Auto-generated method stub
+						if (exception != null) {
+							logger.error("An error occured", exception);
+						}
+					}
+				});
+				logger.info("***Successfully saved message to Kafka topic***");
 			}
 		}
 		client.stop();
