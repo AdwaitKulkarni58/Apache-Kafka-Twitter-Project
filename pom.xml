@@ -34,5 +34,10 @@
 			<artifactId>kafka-twitter-producer</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.adwaitkulkarni58</groupId>
+			<artifactId>kafka-twitter-consumer</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
