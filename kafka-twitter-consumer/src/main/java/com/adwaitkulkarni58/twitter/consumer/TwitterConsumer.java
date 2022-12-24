@@ -98,7 +98,9 @@ public class TwitterConsumer {
 
 				IndexResponse response = null;
 				try {
+					logger.info("Indexing the value");
 					response = client.index(request);
+					logger.info("Indexing complete");
 				} catch (ElasticsearchException e) {
 					logger.error(e.toString());
 				} catch (IOException e) {
@@ -129,6 +131,7 @@ public class TwitterConsumer {
 		logger.info("Properties set successfully");
 
 		logger.info("Creating a kafka consumer");
+
 		@SuppressWarnings("resource")
 		KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(properties);
 		logger.info("Consumer created successfully");
