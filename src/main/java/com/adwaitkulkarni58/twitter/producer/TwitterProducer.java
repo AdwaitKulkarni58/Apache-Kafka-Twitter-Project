@@ -86,7 +86,6 @@ public class TwitterProducer {
 
 					@Override
 					public void onCompletion(RecordMetadata metadata, Exception exception) {
-						// TODO Auto-generated method stub
 						if (exception != null) {
 							logger.error("An error occured", exception);
 						}
