@@ -86,17 +86,15 @@ public class TwitterConsumer {
 		String index = "twitter";
 		ElasticsearchClient client = createClient();
 
-		Reader input = new StringReader(
-				"{'@timestamp': '2022-04-08T13:55:32Z', 'level': 'warn', 'message': 'Some log message'}".replace('\'',
-						'"'));
-
 		KafkaConsumer<String, String> consumer = createConsumer("tweets");
 
 		while (true) {
 			ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
 
 			for (ConsumerRecord<String, String> record : records) {
-				IndexRequest<JsonData> request = IndexRequest.of(i -> i.index(index).withJson(input));
+				String jsonString = record.value();
+				IndexRequest<JsonData> request = IndexRequest
+						.of(i -> i.index(index).withJson(new StringReader(jsonString)));
 
 				IndexResponse response = null;
 				try {
