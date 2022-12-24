@@ -39,6 +39,7 @@ public class TwitterProducer {
 	// run the producer
 	@Bean
 	public void run() {
+		// create a message queue
 		BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000);
 
 		// create twitter client
@@ -80,6 +81,7 @@ public class TwitterProducer {
 	// create a twitter client for the producer to receive messages from
 	@Bean
 	public Client createTwitterClient(BlockingQueue<String> msgQueue) {
+		// get config values from secrets file
 		String apiKey = twitterConfig.getTwitterApiKey();
 		String apiKeySecret = twitterConfig.getTwitterApiKeySecret();
 		String accessToken = twitterConfig.getTwitterAccessToken();
