@@ -33,7 +33,7 @@ public class TwitterConsumer {
 	@Autowired
 	private ElasticSearchConfig elasticSearchConfig;
 
-	public RestClient createClient() {
+	public void createClient() {
 
 		String hostname = elasticSearchConfig.getHostname();
 		String username = elasticSearchConfig.getUsername();
@@ -50,9 +50,6 @@ public class TwitterConsumer {
 					}
 				});
 
-		RestClient restClient = new RestClient(builder);
-
-		return restClient;
 	}
 
 	public void createConsumer() {
