@@ -52,7 +52,9 @@ public class TwitterConsumer {
 		String password = elasticSearchConfig.getPassword();
 
 		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+		logger.info("Setting credentials for rest client");
 		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+		logger.info("Credentials set successfully");
 
 		RestClientBuilder builder = RestClient.builder(new HttpHost(hostname, 443))
 				.setHttpClientConfigCallback(new HttpClientConfigCallback() {
@@ -63,13 +65,19 @@ public class TwitterConsumer {
 				});
 
 		// Create the low-level client
+		logger.info("Creating low level client");
 		RestClient restClient = RestClient.builder(new HttpHost(hostname, 443)).build();
+		logger.info("Low level client initialized successfully");
 
 		// Create the transport with a Jackson mapper
+		logger.info("Creating transport for the client");
 		ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
+		logger.info("Transport created successfully");
 
 		// And create the API client
+		logger.info("Creating actual elastic client");
 		ElasticsearchClient client = new ElasticsearchClient(transport);
+		logger.info("Elastic client created successfully");
 
 		return client;
 
@@ -90,11 +98,9 @@ public class TwitterConsumer {
 		try {
 			response = client.index(request);
 		} catch (ElasticsearchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.toString());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.toString());
 		}
 
 		logger.info("Indexed with version " + response.version());
@@ -108,14 +114,19 @@ public class TwitterConsumer {
 		// set properties
 		Properties properties = new Properties();
 
+		logger.info("Setting consumer properties");
 		properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
 		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		logger.info("Properties set successfully");
 
+		logger.info("Creating a kafka consumer");
 		@SuppressWarnings("resource")
 		KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(properties);
+		logger.info("Consumer created successfully");
 
 		consumer.subscribe(Collections.singleton(topic));
+		logger.info("Subscribed to a topic");
 
 		while (true) {
 			ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
