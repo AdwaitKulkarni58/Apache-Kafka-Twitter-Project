@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -83,7 +84,6 @@ public class TwitterConsumer {
 	}
 
 	// search for an actual index using elastic's documentation
-	@PostConstruct
 	public void searchForIndex() {
 		String index = "twitter";
 		ElasticsearchClient client = createClient();
@@ -105,29 +105,8 @@ public class TwitterConsumer {
 
 		logger.info("Result of indexing " + response);
 		logger.info("Indexed with id " + response.id());
-	}
 
-	// create a consumer
-	public void createConsumer() {
-		String BOOTSTRAP_SERVERS = "127.0.0.1:9092";
-		String topic = "tweets"; // topic name, change for different topics
-
-		// set properties
-		Properties properties = new Properties();
-
-		logger.info("Setting consumer properties");
-		properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-		logger.info("Properties set successfully");
-
-		logger.info("Creating a kafka consumer");
-		@SuppressWarnings("resource")
-		KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(properties);
-		logger.info("Consumer created successfully");
-
-		consumer.subscribe(Collections.singleton(topic));
-		logger.info("Subscribed to a topic");
+		KafkaConsumer<String, String> consumer = createConsumer("tweets");
 
 		while (true) {
 			ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
@@ -136,6 +115,33 @@ public class TwitterConsumer {
 				logger.info("Key:" + record.key() + ", value:" + record.value());
 			}
 		}
+	}
+
+	// create a consumer
+	public KafkaConsumer<String, String> createConsumer(String topic) {
+		String BOOTSTRAP_SERVERS = "127.0.0.1:9092";
+		topic = "tweets"; // topic name, change for different topics
+		String groupId = "kafka-twitter-elasticsearch";
+
+		// set properties
+		Properties properties = new Properties();
+
+		logger.info("Setting consumer properties");
+		properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+		logger.info("Properties set successfully");
+
+		logger.info("Creating a kafka consumer");
+		@SuppressWarnings("resource")
+		KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(properties);
+		logger.info("Consumer created successfully");
+
+		consumer.subscribe(Arrays.asList(topic));
+		logger.info("Subscribed to a topic");
+
+		return consumer;
 
 	}
 
