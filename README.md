@@ -1,6 +1,6 @@
 ## Title:  
   
-TweetVibes
+Tweet-Vibes
   
 ## Description:  
   
